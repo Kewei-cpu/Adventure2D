@@ -14,27 +14,33 @@ class MenuClass():
 
         self.backgroundColor = (0, 0, 0)
 
-        # font
-        self.textFont = pygame.font.Font(filepath('Minecraftia.ttf'), 16)
+        self.titleFont = pygame.font.Font(filepath('Minecraftia.ttf'), 64)
 
         # menus
         self.selectedMenu = 0
         self.menus = []
 
-        # texts
-        self.texts = []
+        self.title = ''
 
         # keyboard events
         self.keyboardEvents = []
 
     def draw(self):
         self.surface.fill(self.backgroundColor)
-
+        self.drawTitle()
         if len(self.menus):
             self.drawMenus()
 
         # update surface
         pygame.display.update()
+
+    def drawTitle(self):
+        title = self.titleFont.render(self.title, False, (255, 255, 255))
+        rect = title.get_rect()
+        objAmount = len(self.menus) + 1
+        rect.centerx = WINWIDTH / 2
+        rect.centery = WINHEIGHT / (objAmount + 1)
+        self.surface.blit(title, rect)
 
     def drawMenus(self):
         for menu in self.menus:
@@ -61,19 +67,19 @@ class MenuClass():
             if len(self.menus):
                 self.menus[self.selectedMenu].click()
 
-        if pressed(K_q) or pressed(K_ESCAPE):
+        if event.type == pygame.QUIT or pressed(K_ESCAPE):
             pygame.quit()
             sys.exit()
+
 
     def addMenu(self, caption, antialias=False, color=(255, 255, 255), activeColor=(255, 0, 255)):
         self.menus.append(MenuItemClass(caption, antialias=antialias, color=color, activeColor=activeColor))
 
         # update placement (center)
-        menuAmount = len(self.menus)
+        objAmount = len(self.menus) + 1
         for i in range(len(self.menus)):
             self.menus[i].rect.centerx = WINWIDTH / 2
-            self.menus[i].rect.centery = WINHEIGHT / (
-                    menuAmount + 1) * (i + 1)
+            self.menus[i].rect.centery = WINHEIGHT / (objAmount + 1) * (i + 2)
 
         self._updateSelectedMenu()
 
@@ -127,6 +133,7 @@ class MenuMain(MenuClass):
         MenuClass.__init__(self, surface)
 
         self.engine = engine
+        self.title = 'Adventure 2D'
 
         self.addMenu('Start')
         self.menus[0].connect(self.clickStart)
@@ -153,17 +160,21 @@ class MenuSelect(MenuClass):
         '''menus
         '''
         MenuClass.__init__(self, surface)
+        self.title = 'Select a Level'
 
         self.engine = engine
 
-        self.addMenu('LEVEL 1')
+        self.addMenu('Level 1')
         self.menus[0].connect(self.click1)
 
-        self.addMenu('LEVEL 2')
+        self.addMenu('Level 2')
         self.menus[1].connect(self.click2)
 
-        self.addMenu('LEVEL 3')
+        self.addMenu('Level 3')
         self.menus[2].connect(self.click3)
+
+        self.addMenu('back')
+        self.menus[3].connect(self.back)
 
     def click1(self):
         self.engine.currentLevel = 1
@@ -177,14 +188,67 @@ class MenuSelect(MenuClass):
         self.engine.currentLevel = 3
         self.engine.setState(MENU_INGAME)
 
+    def back(self):
+        self.engine.setState(MENU_MAIN)
 
 class MenuAbout(MenuClass):
-    pass
+    def __init__(self, surface, engine):
+        '''menus
+        '''
+        MenuClass.__init__(self, surface)
+        self.title = '@Kewei-cpu'
+
+        self.engine = engine
+
+        self.addMenu('back')
+        self.menus[0].connect(self.back)
+
+    def back(self):
+        self.engine.setState(MENU_MAIN)
 
 
 class MenuNext(MenuClass):
-    pass
+    def __init__(self, surface, engine):
+        '''menus
+        '''
+        MenuClass.__init__(self, surface)
+
+        self.engine = engine
+        self.title = 'Level Complete !'
+
+        self.addMenu('Next')
+        self.menus[0].connect(self.next)
+
+        self.addMenu('Back')
+        self.menus[1].connect(self.back)
+
+
+    def next(self):
+        self.engine.currentLevel += 1
+        self.engine.setState(MENU_INGAME)
+
+    def back(self):
+        self.engine.setState(MENU_SELECT)
+
 
 
 class MenuLoss(MenuClass):
-    pass
+    def __init__(self, surface, engine):
+        '''menus
+        '''
+        MenuClass.__init__(self, surface)
+
+        self.engine = engine
+        self.title = 'You Died !'
+
+        self.addMenu('Retry')
+        self.menus[0].connect(self.retry)
+
+        self.addMenu('Back')
+        self.menus[1].connect(self.back)
+
+    def retry(self):
+        self.engine.setState(MENU_INGAME)
+
+    def back(self):
+        self.engine.setState(MENU_SELECT)

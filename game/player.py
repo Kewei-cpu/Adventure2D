@@ -30,7 +30,7 @@ class PlayerSprite(pygame.sprite.Sprite):
         self.gravity = 0.5
 
         # move speed
-        self.moveSpeed = 2
+        self.moveSpeed = 3
 
         # targetting
         self.direction = DIR_RIGHT

@@ -1,8 +1,8 @@
 import pygame
 import time
 
-from game.block import BlockSprite
-from game.item import ItemSprite
+from game.block import *
+from game.item import *
 from game.constants import *
 from game.resources import filepath
 
@@ -27,6 +27,7 @@ class LevelEngine:
     def generateLevel(self, num):
 
         levelTxt = filepath(f'level{num}.txt')
+        self.levelStructure = [[None for i in range(self.height)] for i in range(self.width)]
 
         with open(levelTxt, 'r', encoding='utf-8') as f:
             for i, line in enumerate(f.readlines()):
@@ -37,7 +38,10 @@ class LevelEngine:
                         self.plyerStartX = j
                         self.plyerStartY = i
                     elif letter == '*':
-                        self.levelStructure[j][i] = ItemSprite(j, i)
+                        self.levelStructure[j][i] = FinishItem(j, i)
+                    elif letter == '%':
+                        self.levelStructure[j][i] = DeadItem(j, i)
+
 
 
         self.levelTimeStart = time.time()

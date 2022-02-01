@@ -7,7 +7,7 @@ from game.graphics import GraphicsEngine
 from game.menus import *
 from game.level import level
 from game.block import BlockSprite
-from game.item import ItemSprite
+from game.item import *
 from game.player import player
 
 
@@ -40,9 +40,9 @@ class GameEngine():
 
         # menus
         self.menuMain = MenuMain(self.screen, self)
-        # self.menuAbout = MenuAbout(self.screen, self)
-        # self.menuNext = MenuNext(self.screen, self)
-        # self.menuLoss = MenuLoss(self.screen, self)
+        self.menuAbout = MenuAbout(self.screen, self)
+        self.menuNext = MenuNext(self.screen, self)
+        self.menuLoss = MenuLoss(self.screen, self)
         self.menuSelect = MenuSelect(self.screen, self)
 
         # start the loop
@@ -114,6 +114,8 @@ class GameEngine():
                 if player.onGround:
                     player.jumping = True
                     player.onGround = False
+                else:
+                    print('loss')
 
             elif event.key == pygame.K_ESCAPE:
                 self.GAME_STATE = MENU_SELECT
@@ -132,7 +134,6 @@ class GameEngine():
 
     def setState(self, state):
         if state == MENU_INGAME:
-            # reset game information
             level.generateLevel(self.currentLevel)
             player.reset()
 
@@ -142,9 +143,12 @@ class GameEngine():
     def checkGameState(self):
         for i in level.levelStructure:
             for j in i:
-                if isinstance(j, ItemSprite):
+                if isinstance(j, FinishItem):
                     if pygame.sprite.collide_rect(player, j):
-                        self.setState(MENU_SELECT)
+                        self.setState(MENU_NEXT)
+                if isinstance(j, DeadItem):
+                    if pygame.sprite.collide_rect(player, j):
+                        self.setState(MENU_LOSS)
 
     def resetGame(self):
         self.currentLevel = 1
@@ -162,8 +166,6 @@ class GameEngine():
                     if pygame.sprite.collide_rect(sprite, block):
                         if xVel < 0:
                             sprite.rect.x = block.rect.x + block.rect.w
-
-
                         if xVel > 0:
                             sprite.rect.x = block.rect.x - sprite.rect.w
 
@@ -186,7 +188,9 @@ class GameEngine():
         player.doJump()
         player.calculateBlocksAroundPlayer()
         if player.onGround and not player.jumping:
-            if not player.blocksAroundPlayer[0] and not player.blocksAroundPlayer[1]:
+            if not player.blocksAroundPlayer[0] and not player.blocksAroundPlayer[1] or\
+                isinstance(player.blocksAroundPlayer[0], ItemSprite)or\
+                isinstance(player.blocksAroundPlayer[1], ItemSprite):
                 player.hollow1 = player.hollow
                 player.hollow = True
 
