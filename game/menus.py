@@ -4,6 +4,7 @@ from pygame.locals import *
 
 from game.constants import *
 from game.resources import filepath
+from game.level import level
 
 
 class MenuClass():
@@ -214,7 +215,7 @@ class MenuNext(MenuClass):
         MenuClass.__init__(self, surface)
 
         self.engine = engine
-        self.title = 'Level Complete !'
+        self.title = 'Level Completed in {} s'.format(round(level.levelTime, 1))
 
         self.addMenu('Next')
         self.menus[0].connect(self.next)

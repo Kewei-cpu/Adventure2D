@@ -2,13 +2,12 @@ import time
 
 import pygame
 
-
+from game.player import player
 from game.graphics import GraphicsEngine
 from game.menus import *
 from game.level import level
 from game.block import BlockSprite
 from game.item import *
-from game.player import player
 
 
 
@@ -92,8 +91,7 @@ class GameEngine():
                 pygame.display.update()
 
                 # limit fps
-                self.clock.tick(60)
-
+                self.clock.tick(FPS)
 
         # game not running any longer, so lets quit
         pygame.quit()
@@ -102,11 +100,13 @@ class GameEngine():
         global player
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT or event.key == pygame.K_a:
-                player.xVel = -player.moveSpeed
+                player.speedup = True
+                player.speeddown = False
                 player.direction = DIR_LEFT
 
             elif event.key == pygame.K_RIGHT or event.key == pygame.K_d:
-                player.xVel = +player.moveSpeed
+                player.speedup = True
+                player.speeddown = False
                 player.direction = DIR_RIGHT
 
             # jump
@@ -124,18 +124,21 @@ class GameEngine():
 
         elif event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT or event.key == pygame.K_a:
-                player.xVel += player.moveSpeed
-                player.direction = DIR_LEFT
+                if not pygame.key.get_pressed()[pygame.K_RIGHT]:
+                    player.speedup = False
+                    player.speeddown = True
+                    player.direction = DIR_LEFT
 
             elif event.key == pygame.K_RIGHT or event.key == pygame.K_d:
-                player.xVel -= player.moveSpeed
-                player.direction = DIR_RIGHT
+                if not pygame.key.get_pressed()[pygame.K_LEFT]:
+                    player.speedup = False
+                    player.speeddown = True
+                    player.direction = DIR_RIGHT
 
     def setState(self, state):
         if state == MENU_INGAME:
             level.generateLevel(self.currentLevel)
             player.reset()
-
 
         self.GAME_STATE = state
 
@@ -144,6 +147,8 @@ class GameEngine():
             for j in i:
                 if isinstance(j, FinishItem):
                     if pygame.sprite.collide_rect(player, j):
+                        level.levelTime = time.time() - level.levelTimeStart
+                        self.menuNext = MenuNext(self.screen, self)
                         self.setState(MENU_NEXT)
                 if isinstance(j, DeadItem):
                     if pygame.sprite.collide_rect(player, j):
@@ -187,7 +192,7 @@ class GameEngine():
         player.doJump()
         player.calculateBlocksAroundPlayer()
         if player.onGround and not player.jumping:
-            if not player.blocksAroundPlayer[0] and not player.blocksAroundPlayer[1] :
+            if not player.blocksAroundPlayer[0] and not player.blocksAroundPlayer[1]:
                 player.hollow1 = player.hollow
                 player.hollow = True
 
@@ -196,16 +201,35 @@ class GameEngine():
             player.hollow = False
             player.hollow1 = False
 
+        if player.speedup:
+            if player.direction == DIR_LEFT:
+                player.xVel -= player.moveSpeed / (FPS * ACC_TIME)
+            else:
+                player.xVel += player.moveSpeed / (FPS * ACC_TIME)
+
+        if player.speeddown:
+            if player.direction == DIR_LEFT:
+                player.xVel += player.moveSpeed / (FPS * ACC_TIME)
+                if player.xVel >= 0:
+                    player.xVel = 0
+                    player.speeddown = False
+            else:
+                player.xVel -= player.moveSpeed / (FPS * ACC_TIME)
+                if player.xVel <= 0:
+                    player.xVel = 0
+                    player.speeddown = False
+
         if player.xVel > player.moveSpeed:
             player.xVel = player.moveSpeed
+            player.speedup = False
         elif player.xVel < -player.moveSpeed:
             player.xVel = -player.moveSpeed
+            player.speedup = False
 
         if player.rect.x <= 0:
             player.rect.x = 0
         elif player.rect.x >= WINWIDTH - player.rect.w:
             player.rect.x = WINWIDTH - player.rect.w
-
 
         player.rect.x += player.xVel
         self.checkCollision(player, player.xVel, 0)

@@ -21,8 +21,7 @@ class LevelEngine:
 
         # level time
         self.levelTimeStart = time.time()
-
-        # level score
+        self.levelTime = 0
 
     def generateLevel(self, num):
 

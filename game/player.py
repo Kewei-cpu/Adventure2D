@@ -26,6 +26,8 @@ class PlayerSprite(pygame.sprite.Sprite):
         self.hollow1 = False
         self.jumping = False
         self.onGround = False
+        self.speedup = False
+        self.speeddown = False
         self.origJumpVel = 15
         self.jumpVel = self.origJumpVel
         self.gravity = 0.5

@@ -41,18 +41,12 @@ class GraphicsEngine():
         player.draw(self.screenSurface)
 
         # draw score
-        self.drawAltitude()
+
         self.drawTime()
-
-
-    def drawAltitude(self):
-        textSurface = self.scoreFont.render('ALTITUDE: ' + str(
-            player.altitude) + ' m', False, (255, 255, 255))
-        self.screenSurface.blit(textSurface, (20, 68))
 
     def drawTime(self):
         textSurface = self.scoreFont.render('TIME : ' + str(round(
             time.time() - level.levelTimeStart, 1)) + ' SECS', 0, (255, 255, 255))
-        self.screenSurface.blit(textSurface, (20, 44))
+        self.screenSurface.blit(textSurface, (20, 15))
 
 
