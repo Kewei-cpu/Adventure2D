@@ -1,8 +1,8 @@
 import pygame
 
+from game.block import BlockSprite
 from game.constants import *
 from game.level import level
-from game.block import BlockSprite
 
 
 class PlayerSprite(pygame.sprite.Sprite):
@@ -28,12 +28,12 @@ class PlayerSprite(pygame.sprite.Sprite):
         self.onGround = False
         self.speedup = False
         self.speeddown = False
-        self.origJumpVel = 15
+        self.origJumpVel = 12.5
         self.jumpVel = self.origJumpVel
         self.gravity = 0.5
 
         # move speed
-        self.moveSpeed = 3
+        self.moveSpeed = 4
 
         # targetting
         self.direction = DIR_RIGHT
@@ -44,14 +44,14 @@ class PlayerSprite(pygame.sprite.Sprite):
 
     def calculateBlocksAroundPlayer(self):
         blocks = []
-        plrX = self.rect.x // BLOCK_W
+        plrX = (self.rect.x + 1) // BLOCK_W
         plrY = self.rect.y // BLOCK_H
         if isinstance(level.levelStructure[plrX][plrY + 1], BlockSprite):
             blocks.append(level.levelStructure[plrX][plrY + 1])  # below
         else:
             blocks.append(None)
 
-        plrX1 = self.rect.topright[0] // BLOCK_W
+        plrX1 = (self.rect.topright[0] - 1) // BLOCK_W
         plrY1 = self.rect.topright[1] // BLOCK_H
 
         if isinstance(level.levelStructure[plrX1][plrY + 1], BlockSprite):
@@ -65,7 +65,6 @@ class PlayerSprite(pygame.sprite.Sprite):
         y = self.rect.y + (self.rect.h - self.image.get_rect().h)
         surface.blit(self.image, (self.rect.x, y))
 
-
     def reset(self):
         self.rect.x = level.plyerStartX * BLOCK_W
         self.rect.y = level.plyerStartY * BLOCK_H
@@ -73,7 +72,6 @@ class PlayerSprite(pygame.sprite.Sprite):
         self.xVel = 0
         self.yVel = 0
         self.direction = DIR_RIGHT
-
 
     def doJump(self):
         if self.jumping and not self.onGround:

@@ -1,9 +1,8 @@
-import pygame
 import time
 
 from game.block import *
-from game.item import *
 from game.constants import *
+from game.item import *
 from game.resources import filepath
 
 
@@ -40,8 +39,6 @@ class LevelEngine:
                         self.levelStructure[j][i] = FinishItem(j, i)
                     elif letter == '%':
                         self.levelStructure[j][i] = DeadItem(j, i)
-
-
 
         self.levelTimeStart = time.time()
 

@@ -1,4 +1,5 @@
 import pygame
+
 from game.constants import *
 
 
@@ -12,16 +13,18 @@ class ItemSprite(pygame.sprite.Sprite):
         self.image = pygame.Surface([BLOCK_W - 20, BLOCK_H - 20])
 
         self.rect = self.image.get_rect()
-        self.rect.x = self.displayX + (BLOCK_W - self.image.get_width())//2
-        self.rect.y = self.displayY + (BLOCK_H - self.image.get_height())//2
+        self.rect.x = self.displayX + (BLOCK_W - self.image.get_width()) // 2
+        self.rect.y = self.displayY + (BLOCK_H - self.image.get_height()) // 2
 
     def draw(self, surface):
         surface.blit(self.image, self.rect)
+
 
 class FinishItem(ItemSprite):
     def __init__(self, x, y):
         super().__init__(x, y)
         self.image.fill(BLOCK_COLOR_FINISH)
+
 
 class DeadItem(ItemSprite):
     def __init__(self, x, y):

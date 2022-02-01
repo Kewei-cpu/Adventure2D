@@ -1,20 +1,17 @@
 import time
 
-import pygame
-
-from game.player import player
-from game.graphics import GraphicsEngine
-from game.menus import *
-from game.level import level
 from game.block import BlockSprite
+from game.graphics import GraphicsEngine
 from game.item import *
-
+from game.player import player
+from game.level import level
+from game.menus import *
 
 
 class GameEngine():
-    def __init__(self, screenWidth, screenHeight):
-        self.screenWidth = screenWidth
-        self.screenHeight = screenHeight
+    def __init__(self):
+        self.screenWidth = WINWIDTH
+        self.screenHeight = WINHEIGHT
 
         # screen
         self.screen = None
@@ -26,7 +23,7 @@ class GameEngine():
         self.clock = pygame.time.Clock()
         self.gameTime = time.time()
         self.gameRunning = True
-        # self.currentLevel = 1
+        self.currentLevel = 1
 
     def initializeGame(self):
         pygame.init()
@@ -115,6 +112,9 @@ class GameEngine():
                     player.jumping = True
                     player.onGround = False
 
+            elif event.key == pygame.K_r:
+                self.resetGame()
+
 
             elif event.key == pygame.K_ESCAPE:
                 self.GAME_STATE = MENU_SELECT
@@ -155,10 +155,7 @@ class GameEngine():
                         self.setState(MENU_LOSS)
 
     def resetGame(self):
-        self.currentLevel = 1
-        self.currentScene = 0
-
-        level.generateLevel()
+        level.generateLevel(self.currentLevel)
         player.reset()
 
     def checkCollision(self, sprite, xVel, yVel):

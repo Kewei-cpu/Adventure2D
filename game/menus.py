@@ -1,10 +1,11 @@
-import pygame
 import sys
+
+import pygame
 from pygame.locals import *
 
 from game.constants import *
-from game.resources import filepath
 from game.level import level
+from game.resources import filepath
 
 
 class MenuClass():
@@ -64,14 +65,13 @@ class MenuClass():
             self.selectedMenu = (self.selectedMenu + 1) % len(self.menus)
             self._updateSelectedMenu()
 
-        if pressed(K_SPACE) or pressed(K_RETURN) or pressed(K_x):
+        if pressed(K_RETURN):
             if len(self.menus):
                 self.menus[self.selectedMenu].click()
 
         if event.type == pygame.QUIT or pressed(K_ESCAPE):
             pygame.quit()
             sys.exit()
-
 
     def addMenu(self, caption, antialias=False, color=(255, 255, 255), activeColor=(255, 0, 255)):
         self.menus.append(MenuItemClass(caption, antialias=antialias, color=color, activeColor=activeColor))
@@ -192,6 +192,7 @@ class MenuSelect(MenuClass):
     def back(self):
         self.engine.setState(MENU_MAIN)
 
+
 class MenuAbout(MenuClass):
     def __init__(self, surface, engine):
         '''menus
@@ -223,14 +224,12 @@ class MenuNext(MenuClass):
         self.addMenu('Back')
         self.menus[1].connect(self.back)
 
-
     def next(self):
         self.engine.currentLevel += 1
         self.engine.setState(MENU_INGAME)
 
     def back(self):
         self.engine.setState(MENU_SELECT)
-
 
 
 class MenuLoss(MenuClass):
