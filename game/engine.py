@@ -114,8 +114,7 @@ class GameEngine():
                 if player.onGround:
                     player.jumping = True
                     player.onGround = False
-                else:
-                    print('loss')
+
 
             elif event.key == pygame.K_ESCAPE:
                 self.GAME_STATE = MENU_SELECT
@@ -188,9 +187,7 @@ class GameEngine():
         player.doJump()
         player.calculateBlocksAroundPlayer()
         if player.onGround and not player.jumping:
-            if not player.blocksAroundPlayer[0] and not player.blocksAroundPlayer[1] or\
-                isinstance(player.blocksAroundPlayer[0], ItemSprite)or\
-                isinstance(player.blocksAroundPlayer[1], ItemSprite):
+            if not player.blocksAroundPlayer[0] and not player.blocksAroundPlayer[1] :
                 player.hollow1 = player.hollow
                 player.hollow = True
 
@@ -208,6 +205,7 @@ class GameEngine():
             player.rect.x = 0
         elif player.rect.x >= WINWIDTH - player.rect.w:
             player.rect.x = WINWIDTH - player.rect.w
+
 
         player.rect.x += player.xVel
         self.checkCollision(player, player.xVel, 0)

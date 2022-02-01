@@ -2,6 +2,7 @@ import pygame
 
 from game.constants import *
 from game.level import level
+from game.block import BlockSprite
 
 
 class PlayerSprite(pygame.sprite.Sprite):
@@ -43,13 +44,18 @@ class PlayerSprite(pygame.sprite.Sprite):
         blocks = []
         plrX = self.rect.x // BLOCK_W
         plrY = self.rect.y // BLOCK_H
-
-        blocks.append(level.levelStructure[plrX][plrY + 1])  # below
+        if isinstance(level.levelStructure[plrX][plrY + 1], BlockSprite):
+            blocks.append(level.levelStructure[plrX][plrY + 1])  # below
+        else:
+            blocks.append(None)
 
         plrX1 = self.rect.topright[0] // BLOCK_W
         plrY1 = self.rect.topright[1] // BLOCK_H
 
-        blocks.append(level.levelStructure[plrX1][plrY1 + 1])  # below
+        if isinstance(level.levelStructure[plrX1][plrY + 1], BlockSprite):
+            blocks.append(level.levelStructure[plrX1][plrY1 + 1])  # below
+        else:
+            blocks.append(None)
 
         self.blocksAroundPlayer = blocks
 
